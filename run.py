@@ -75,11 +75,17 @@ HANGMAN_DRAWING = [
 ]
 
 # global variables
-guesses_left = len(HANGMAN_DRAWING) - 1
-print(guesses_left)
+allowed_wrong_guesses = len(HANGMAN_DRAWING) - 1
+print("Allowed wrong guesses: ", allowed_wrong_guesses)
+wrong_guesses = 0
+print("Wrong guesses: ", wrong_guesses)
+guesses_left = allowed_wrong_guesses - wrong_guesses
+
+print("Guesses left: ",guesses_left)
 
 used_letters = []
 print(used_letters)
+
 
 # Generate a random word from the tuple words.
 # Convert word to uppercase for comparison with the user's guess.
@@ -191,12 +197,11 @@ def get_guess():
     Passes the letter for validation to the validate_guess function.
     """
     while True:
-        word_puzzle(used_letters)
+        word_puzzle(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses)
         guess = input("Guess a letter: ").strip().upper()
         if validate_guess(guess, used_letters):
             print("rendering function: get_guess")
-            break
-    return guess
+        return guess
 
 
 def validate_guess(guess, used_letters):
@@ -212,26 +217,27 @@ def validate_guess(guess, used_letters):
         return False
     else:
         print(f"Let's see if {guess} works...")
-        return compare_guess(guess, word, guesses_left, used_letters)
+        return compare_guess(guess, word, wrong_guesses, guesses_left, used_letters)
 
 
-def compare_guess(guess, word, guesses_left, used_letters):
+def compare_guess(guess, word, wrong_guesses, guesses_left, used_letters):
     """
     Function that compares user's guess with the word to guess and already used letters.
     Returns the correct guess or appends the wrong guess to used_letters list.
     """
     while guesses_left > 0:
+        word_puzzle(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses)
         if guess in used_letters:
             print(f"You've already guessed {guess}. Try again.")
             return
         elif guess not in word:
             used_letters.append(guess)
-            guesses_left -= 1
+            wrong_guesses += 1
             print(f"Wrong guess, {guess} is not correct.")
             used_letters = " ".join(
                 [letter if letter in used_letters else "_" for letter in word]
             )
-            return guesses_left, used_letters
+            return wrong_guesses, guesses_left, used_letters
         else:
             print(f"Great job, {guess} is correct!")
             used_letters.append(guess)
@@ -240,20 +246,21 @@ def compare_guess(guess, word, guesses_left, used_letters):
             )
 
 
-def word_puzzle(used_letters):
+def word_puzzle(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses):
     """
     Function that displays the word puzzle to the user.
     Ends game when winning or losing conditions are met.
     """
-    while guesses_left > 0:
-        print(word)  # To-do: delete
-        print(blanks)
-        print(used_letters)
-        print(HANGMAN_DRAWING[guesses_left])
-        return True
+    print(word)
+    print(blanks)
+    print(used_letters)
+    print(HANGMAN_DRAWING[guesses_left])
+    print("Allowed wrong guesses: ", allowed_wrong_guesses)
+    print("Wrong guesses: ", wrong_guesses)
+    print("Guesses left: ", guesses_left)
     if guesses_left > 0 and "_" not in blanks:
         print("Congratulations, {username}, you won!")
-    if guesses_left == 0 and "_" in blanks:
+    elif guesses_left == 0 and "_" in blanks:
         print("Too bad, {}, you lost.")
         return choice_play_again()
 
@@ -283,12 +290,9 @@ def main():
     Function to run all game functions.
     """
     choice_play_game()
-
-
-
     guess = get_guess()
-    compare_guess(guess, word, guesses_left, used_letters)
-    word_puzzle(used_letters)
+    compare_guess(guess, word, wrong_guesses, guesses_left, used_letters)
+    word_puzzle(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses)
 
 
 main()
