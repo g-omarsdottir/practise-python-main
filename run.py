@@ -1,19 +1,21 @@
 import random
+import os
 
+# Constants
 
 # Words to guess in a tuple (immutable)
-words = (
-    "ant baboon badger bat bear beaver camel cat clam cobra cougar "
-    "coyote crow deer dog donkey duck eagle ferret fox frog goat "
-    "goose hawk lion lizard llama mole monkey moose mouse mule newt "
-    "otter owl panda parrot pigeon python rabbit ram rat raven "
-    "rhino salmon seal shark sheep skunk sloth snake spider "
-    "stork swan tiger toad trout turkey turtle weasel whale wolf "
-    "wombat zebra "
+WORDS = (
+    "ANT BABOON BADGER BAT BEAR BEAVER CAMEL CAT CLAM COBRA COUGAR"
+    "COYOTE CROW DEER DOG DONKEY DUCK EAGLE FERRET FOX FROG GOAT"
+    "GOOSE HAWK LION LIZARD LLAMA MOLE MONKEY MOOSE MOUSE MULE NEWT"
+    "OTTER OWL PANDA PARROT PIGEON PYTHON RABBIT RAM RAT RAVEN"
+    "RHINO SALMON SEAL SHARK SHEEP SKUNK SLOTH SNAKE SPIDER"
+    "STORK SWAN TIGER TOAD TROUT TURKEY TURTLE WEASEL WHALE WOLF"
+    "WOMBAT ZEBRA"
 ).split()
 
 # r is raw string notation to solve syntax issues with hangman drawing.
-hangman_drawing = [
+HANGMAN_DRAWING = [
     r"""
   +---+
   |   |
@@ -73,7 +75,7 @@ hangman_drawing = [
 ]
 
 # global variables
-guesses_left = len(hangman_drawing) - 1
+guesses_left = len(HANGMAN_DRAWING) - 1
 print(guesses_left)
 
 used_letters = []
@@ -81,10 +83,27 @@ print(used_letters)
 
 # Generate a random word from the tuple words.
 # Convert word to uppercase for comparison with the user's guess.
-word = random.choice(words).upper()
+word = random.choice(WORDS)
 
 # Generate blanks to indicate number of letters of word to guess.
 blanks = "_ " * len(word)
+
+
+def clear_terminal():
+    """
+    Function to clear terminal screen for a better user experience.
+    Imported built in os module to utilize OS-specific command to interact with operating system.
+    """
+    os.system("cls" if os.name == "nt" else "clear")
+
+
+# Game functions
+
+
+def return_to_menu():
+    input("Press any key to return to the game menu.")
+    clear_terminal()
+    return choice_play_game()
 
 
 def choice_play_game():
@@ -93,21 +112,18 @@ def choice_play_game():
     Choice is to continue to next step to play game.
     """
     print("Welcome to a game of Hangman!")
-    print(hangman_drawing[6])
+    print(HANGMAN_DRAWING[6])
     print()
-
-    while True:
-
-        user_choice_play = input("Would you like to play? (y/n): ").strip().upper()
-        if user_choice_play == "N":
-            print("You choose not to play. See you later, alligator!")
-            return False
-        elif user_choice_play == "Y":
-            print("You choose to play, glad to have you on board!")
-            return True
-        else:
-            print("Invalid input. Please enter 'y' or 'n'.")
-            return False
+    user_choice_play = input("Would you like to play? (y/n): ").strip().upper()
+    if user_choice_play == "N":
+        print("You choose not to play. See you later, alligator!")
+        return return_to_menu()
+    elif user_choice_play == "Y":
+        print("You choose to play, glad to have you on board!")
+        return choice_display_rules()
+    else:
+        print("Invalid input. Please enter 'y' or 'n'.")
+        return user_choice_play
 
 
 def choice_display_rules():
@@ -115,31 +131,30 @@ def choice_display_rules():
     Function that prompts the user to make a choice.
     Choice is to read the rules before playing game.
     """
-    while True:
-        user_choice_rules = (
-            input("Would you like to read the rules? (y/n) ").strip().upper()
+    user_choice_rules = (
+        input("Would you like to read the rules? (y/n) ").strip().upper()
         )
-        if user_choice_rules == "Y":
-            print(
-                """
-                You will get a set of blanks representing the number of letters in a word.
-                Guess the word by entering one letter at a time and press enter.
+    if user_choice_rules == "Y":
+        print(
+            """
+            You will get a set of blanks representing the number of letters in a word.
+            Guess the word by entering one letter at a time and press enter.
 
-                You have 6 guesses. 
+            You have 6 guesses. 
                         
-                If you guess correctly, your letter(s) will appear on the blank(s).
+            If you guess correctly, your letter(s) will appear on the blank(s).
                         
-                If you fail, you have one less guess left and are one step closer to the gallows. 
+            If you fail, you have one less guess left and are one step closer to the gallows. 
                 
-                So choose wisely!
+            So choose wisely!
             """
             )
-            return True
-        elif user_choice_rules == "N":
-            return True
-        else:
-            print("Invalid input. Please enter 'y' or 'n'.")
-            return False
+        return 
+    elif user_choice_rules == "N":
+        return choice_username()
+    else:
+        print("Invalid input. Please enter 'y' or 'n'.")
+        return user_choice_rules
 
 
 def choice_username():
@@ -165,7 +180,7 @@ def validate_username(username):
         return False
     else:
         print(f"Welcome, {username}, let the games begin!")
-        return True
+        return get_guess()
 
 
 def get_guess():
@@ -177,13 +192,13 @@ def get_guess():
     while True:
         word_puzzle(used_letters)
         guess = input("Guess a letter: ").strip().upper()
-        if validate_guess(guess):
-            print("function: get_guess")
+        if validate_guess(guess, used_letters):
+            print("rendering function: get_guess")
             break
     return guess
 
 
-def validate_guess(guess):
+def validate_guess(guess, used_letters):
     """
     Function that validates user input to ensure it is a single letter.
     Returns the validated letter or False if input is invalid.
@@ -194,10 +209,9 @@ def validate_guess(guess):
     elif len(guess) != 1:
         print("Enter a single letter.")
         return False
-    # Add validation for used letters
     else:
         print(f"Let's see if {guess} works...")
-        return compare_guess(guess, word, guesses_left)
+        return compare_guess(guess, word, guesses_left, used_letters)
 
 
 def compare_guess(guess, word, guesses_left, used_letters):
@@ -206,25 +220,23 @@ def compare_guess(guess, word, guesses_left, used_letters):
     Returns the correct guess or appends the wrong guess to used_letters list.
     """
     while guesses_left > 0:
-        if guess in used_letters:  # Doesn't work. If wrong letter guessed, game stops.
+        if guess in used_letters:
             print(f"You've already guessed {guess}. Try again.")
             return
-        elif guess not in word:  # Doesn't work
+        elif guess not in word:
             used_letters.append(guess)
             guesses_left -= 1
             print(f"Wrong guess, {guess} is not correct.")
             used_letters = " ".join(
                 [letter if letter in used_letters else "_" for letter in word]
             )
-            return guesses_left
+            return guesses_left, used_letters
         else:
-            print(
-                f"Great job, {guess} is correct!"
-            )  # Works: the correct guess (letter) is printed
-            used_letters.append(guess)  # Doesn't work
+            print(f"Great job, {guess} is correct!")
+            used_letters.append(guess)
             return " ".join(
                 [letter if letter in used_letters else "_" for letter in word]
-            )  # Doesn't work
+            )
 
 
 def word_puzzle(used_letters):
@@ -236,7 +248,7 @@ def word_puzzle(used_letters):
         print(word)  # To-do: delete
         print(blanks)
         print(used_letters)
-        print(hangman_drawing[guesses_left])
+        print(HANGMAN_DRAWING[guesses_left])
         return True
     if guesses_left > 0 and "_" not in blanks:
         print("Congratulations, {username}, you won!")
@@ -274,8 +286,7 @@ def main():
     choice_username()
 
     guess = get_guess()
-    compare_guess(guess, word, guesses_left)
-    used_letters = compare_guess(guess, word, guesses_left)
+    compare_guess(guess, word, guesses_left, used_letters)
     word_puzzle(used_letters)
 
 
