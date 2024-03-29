@@ -133,11 +133,12 @@ def choice_display_rules():
     """
     user_choice_rules = (
         input("Would you like to read the rules? (y/n) ").strip().upper()
-        )
+    )
     if user_choice_rules == "Y":
         print(
             """
             You will get a set of blanks representing the number of letters in a word.
+            
             Guess the word by entering one letter at a time and press enter.
 
             You have 6 guesses. 
@@ -148,13 +149,13 @@ def choice_display_rules():
                 
             So choose wisely!
             """
-            )
-        return 
+        )
+        return choice_username()
     elif user_choice_rules == "N":
         return choice_username()
     else:
         print("Invalid input. Please enter 'y' or 'n'.")
-        return user_choice_rules
+        return choice_display_rules()
 
 
 def choice_username():
@@ -282,8 +283,8 @@ def main():
     Function to run all game functions.
     """
     choice_play_game()
-    choice_display_rules()
-    choice_username()
+
+
 
     guess = get_guess()
     compare_guess(guess, word, guesses_left, used_letters)
