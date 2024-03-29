@@ -295,5 +295,8 @@ def main():
     compare_guess(guess, word, wrong_guesses, guesses_left, used_letters)
     word_puzzle(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses)
 
+# Your main() function does call compare_guess but doesn't do anything with the returned results.
+    # wrong_guesses, guesses_left, used_letters = compare_guess(guess, word, wrong_guesses, guesses_left, used_letters)
+        # This doesn't work - error message: variables are referenced before assignment.
 
 main()
