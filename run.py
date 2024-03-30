@@ -201,7 +201,7 @@ def get_guess():
         guess = input("Guess a letter: ").strip().upper()
         if validate_guess(guess, used_letters):
             print("rendering function: get_guess")
-    return guess
+            return guess
 
 
 def validate_guess(guess, used_letters):
@@ -233,18 +233,18 @@ def compare_guess(guess, word, wrong_guesses, guesses_left, used_letters):
             return
         elif guess not in word:
             used_letters.append(guess)
-            wrong_guesses += 1
+            updated_wrong_guesses = wrong_guesses + 1  # Store updated values
+            updated_guesses_left = guesses_left - 1  # Store updated values
             print(f"Wrong guess, {guess} is not correct.")
             used_letters = " ".join(
                 [letter if letter in used_letters else "_" for letter in word]
             )
-            return wrong_guesses, guesses_left, used_letters
+            return updated_wrong_guesses, updated_guesses_left, used_letters
         else:
             print(f"Great job, {guess} is correct!")
             used_letters.append(guess)
             return " ".join(
-                [letter if letter in used_letters else "_" for letter in word]
-            )
+                [letter if letter in used_letters else "_" for letter in word])
 
 
 def word_puzzle(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses):
@@ -256,9 +256,9 @@ def word_puzzle(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses
     print(blanks)
     print(used_letters)
     print(HANGMAN_DRAWING[guesses_left])
-    print("Allowed wrong guesses: ", allowed_wrong_guesses)
-    print("Wrong guesses: ", wrong_guesses)
-    print("Guesses left: ", guesses_left)
+    print("Rendering word_puzzle: Allowed wrong guesses: ", allowed_wrong_guesses)
+    print("Rendering word_puzzle: Wrong guesses: ", wrong_guesses)
+    print("Rendering word_puzzle: Guesses left: ", guesses_left)
     if guesses_left > 0 and "_" not in blanks:
         print("Congratulations, {username}, you won!")
     elif guesses_left == 0 and "_" in blanks:
@@ -292,11 +292,16 @@ def main():
     """
     choice_play_game()
     guess = get_guess()
-    compare_guess(guess, word, wrong_guesses, guesses_left, used_letters)
+
+    compare_guess(guess)  # guess, word, wrong_guesses, guesses_left, used_letters
+    updated_wrong_guesses, updated_guesses_left, used_letters = compare_guess()
+    # Update the original variables
+    wrong_guesses = updated_wrong_guesses
+    guesses_left = updated_guesses_left 
     word_puzzle(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses)
 
+
 # Your main() function does call compare_guess but doesn't do anything with the returned results.
-    # wrong_guesses, guesses_left, used_letters = compare_guess(guess, word, wrong_guesses, guesses_left, used_letters)
-        # This doesn't work - error message: variables are referenced before assignment.
+
 
 main()
