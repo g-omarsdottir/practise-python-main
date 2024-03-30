@@ -92,7 +92,7 @@ print(used_letters)
 word = random.choice(WORDS)
 
 # Generate dashes as "blanks" to indicate number of letters of word to guess.
-blanks = "_ " * len(word)
+word_puzzle = "_ " * len(word)
 
 
 def clear_terminal():
@@ -197,7 +197,7 @@ def get_guess():
     Passes the letter for validation to the validate_guess function.
     """
     while True:
-        word_puzzle(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses)
+        win_loss_condition(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses, word_puzzle)
         guess = input("Guess a letter: ").strip().upper()
         if validate_guess(guess, used_letters):
             print("rendering function: get_guess")
@@ -220,14 +220,14 @@ def validate_guess(guess, used_letters):
         return compare_guess(guess, word, wrong_guesses, guesses_left, used_letters)
 
 
-def compare_guess(guess, word, wrong_guesses, guesses_left, used_letters):
+def compare_guess(guess, word, word_puzzle, wrong_guesses, guesses_left, used_letters):
     """
     Function that compares user's guess with the word to guess and already used letters.
     Returns the correct guess or appends the wrong guess to used_letters list.
     Updates count of wrong guesses.
     """
     while guesses_left > 0:
-        word_puzzle(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses)
+        win_loss_condition(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses, word_puzzle)
         if guess in used_letters:
             print(f"You've already guessed {guess}. Try again.")
             return
@@ -236,32 +236,31 @@ def compare_guess(guess, word, wrong_guesses, guesses_left, used_letters):
             updated_wrong_guesses = wrong_guesses + 1  # Store updated values
             updated_guesses_left = guesses_left - 1  # Store updated values
             print(f"Wrong guess, {guess} is not correct.")
-            used_letters = " ".join(
-                [letter if letter in used_letters else "_" for letter in word]
-            )
             return updated_wrong_guesses, updated_guesses_left, used_letters
         else:
             print(f"Great job, {guess} is correct!")
             used_letters.append(guess)
-            return " ".join(
-                [letter if letter in used_letters else "_" for letter in word])
+            word_puzzle = " ".join(
+                [letter if letter in word else "_" for letter in word]
+            )
+            return word_puzzle, used_letters
 
 
-def word_puzzle(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses):
+def win_loss_condition(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses, word_puzzle):
     """
     Function that displays the word puzzle to the user.
     Ends game when winning or losing conditions are met.
     """
     print(word)  # To-do: delete
-    print(blanks)
+    print(word_puzzle)
     print(used_letters)
     print(HANGMAN_DRAWING[guesses_left])
-    print("Rendering word_puzzle: Allowed wrong guesses: ", allowed_wrong_guesses)
-    print("Rendering word_puzzle: Wrong guesses: ", wrong_guesses)
-    print("Rendering word_puzzle: Guesses left: ", guesses_left)
-    if guesses_left > 0 and "_" not in blanks:
+    print("Rendering win_loss_condition: Allowed wrong guesses: ", allowed_wrong_guesses)
+    print("Rendering win_loss_condition: Wrong guesses: ", wrong_guesses)
+    print("Rendering win_loss_condition: Guesses left: ", guesses_left)
+    if guesses_left > 0 and "_" not in word_puzzle:
         print("Congratulations, {username}, you won!")
-    elif guesses_left == 0 and "_" in blanks:
+    elif guesses_left == 0 and "_" in word_puzzle:
         print("Too bad, {}, you lost.")
         return choice_play_again()
 
@@ -293,12 +292,14 @@ def main():
     choice_play_game()
     guess = get_guess()
 
-    compare_guess(guess)  # guess, word, wrong_guesses, guesses_left, used_letters
     updated_wrong_guesses, updated_guesses_left, used_letters = compare_guess()
     # Update the original variables
     wrong_guesses = updated_wrong_guesses
     guesses_left = updated_guesses_left 
-    word_puzzle(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses)
+    compare_guess(
+        guess, word, wrong_guesses, guesses_left, used_letters, word_puzzle
+    )  # guess, word, wrong_guesses, guesses_left, used_letters
+    win_loss_condition(used_letters, guesses_left, allowed_wrong_guesses, wrong_guesses, word_puzzle)
 
 
 # Your main() function does call compare_guess but doesn't do anything with the returned results.
