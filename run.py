@@ -103,6 +103,15 @@ def clear_terminal():
     os.system("cls" if os.name == "nt" else "clear")
 
 
+def visual_separator():
+    """
+    Prints a decorative line as visual separation for feedback.
+    """
+    print()
+    print("\033[1;32;40m" + "—" * 39 + "\033[0m\n")
+    print()
+
+
 # Game functions
 
 
@@ -133,11 +142,12 @@ def choice_play_game():
     word = random.choice(WORDS)
 
     user_choice_play = input("Would you like to play? (y/n): ").strip().upper()
+    clear_terminal()
     if user_choice_play == "N":
-        print("You choose not to play. See you later, alligator!")
+        print("You chose not to play. See you later, alligator!")
         return_to_menu()
     elif user_choice_play == "Y":
-        print("You choose to play, glad to have you on board!")
+        print("You chose to play, glad to have you on board!")
         choice_display_rules()
     else:
         print("Invalid input. Please enter 'y' or 'n'.")
@@ -153,9 +163,12 @@ def choice_display_rules():
     user_choice_rules = (
         input("Would you like to read the rules? (y/n) ").strip().upper()
     )
+    clear_terminal()
     if user_choice_rules == "Y":
         print(
             """
+            Game rules:
+            
             You will get a set of blanks representing
                 the number of letters in a word.
 
@@ -189,6 +202,7 @@ def choice_username():
     """
     while True:
         username = input("Choose your username: ").strip()
+        clear_terminal()
         if validate_username(username):
             return True
 
@@ -217,8 +231,9 @@ def display_game():
     """
     print(HANGMAN_DRAWING[len(wrong_guesses)])
     guesses_left = allowed_wrong_guesses - len(wrong_guesses)
-    print("Rendering display_game: Guesses left: ", guesses_left)
+    print("Guesses left: ", guesses_left)
     print()
+    print(word)
     word_puzzle = [letter if letter in right_guesses else "_" for letter in word]
     print("The Word to guess is: ", " ".join(word_puzzle))
     print()
@@ -231,13 +246,11 @@ def display_user_feedback(user_feedback):
     """
     Displays user feedback for each user guess.
     In a separate function to ensure value assignment before calling.
-    Prints a decorative linevisual separation of feedback.
+    Prints a decorative line as visual separation for feedback.
     """
-    print("\033[1;32;40m" + "—" * 39 + "\033[0m\n")
-    print()
+    visual_separator()
     print(user_feedback)
-    print()
-    print("\033[1;32;40m" + "—" * 39 + "\033[0m\n")
+    visual_separator()
 
 
 def get_guess():
@@ -247,6 +260,7 @@ def get_guess():
     Passes the letter for validation to the validate_guess function.
     """
     guess = input("Guess a letter: ").strip().upper()
+    clear_terminal()
     if validate_guess(guess):
         return guess
     else:
@@ -259,12 +273,17 @@ def validate_guess(guess):
     Returns the validated letter or False if input is invalid.
     """
     if " " in guess or not guess.isalpha():
+        visual_separator()
         print(f"'{guess}' is not a letter, try again.")
+        visual_separator()
         return False
     elif len(guess) != 1:
+        visual_separator()
         print("Enter a single letter.")
+        visual_separator()
         return False
     else:
+        print()
         print(f"Let's see if {guess} works...")
         return True
 
@@ -293,6 +312,7 @@ def choice_play_again():
     user_choice_play_again = (
         input("Would you like to play again? (y/n) ").strip().upper()
     )
+    clear_terminal()
     if user_choice_play_again == "N":
         print("You chose not to play again. See you in a while, crocodile!")
         return_to_menu()
@@ -319,13 +339,17 @@ def main():
             display_game()
             print()
             print("Too bad, you lost.")
+            print()
             print(f"The word to guess was: {word}")
+            print()
             choice_play_again()
-        elif len(right_guesses) == unique_letters_in_word:
-            display_game()
+        elif set(right_guesses) == set(word):
+            print(HANGMAN_DRAWING[wrong_guesses])
             print()
             print("Congratulations, you won!")
+            print()
             print(f"The word to guess was: {word}")
+            print()
             choice_play_again()
 
 
