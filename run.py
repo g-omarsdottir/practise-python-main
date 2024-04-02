@@ -252,9 +252,9 @@ def get_guess():
     while True:
         guess = input("Guess a letter: ").strip().upper()
         clear_terminal()
-        validated_guess = validate_guess(guess)
-        if validated_guess is not False:
-            return guess, validated_guess
+        is_guess_valid = validate_guess(guess)
+        if is_guess_valid is not False:
+            return guess
 
 
 def validate_guess(guess):
@@ -327,8 +327,8 @@ def main():
     choice_play_game()
     while True:
         display_game()
-        validated_guess, guess = get_guess()
-        compare_guess(validated_guess)
+        guess = get_guess()
+        compare_guess(guess)
         if len(wrong_guesses) == allowed_wrong_guesses:
             display_game()
             print()
@@ -338,7 +338,7 @@ def main():
             print()
             choice_play_again()
         elif set(right_guesses) == set(word):
-            print(HANGMAN_DRAWING[wrong_guesses])
+            print(HANGMAN_DRAWING[len(wrong_guesses)])
             print()
             print("Congratulations, you won!")
             print()
