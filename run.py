@@ -78,14 +78,12 @@ HANGMAN_DRAWING = [
 allowed_wrong_guesses = 6
 
 right_guesses = []
+
 wrong_guesses = []
 
 # Generate a random word from the tuple words.
 # Convert word to uppercase for comparison with the user's guess.
 word = random.choice(WORDS)
-
-# Stores the length of unique letters in the word to guess,
-unique_letters_in_word = len(list(set(word)))
 
 # Generate dashes to indicate number of letters of word to guess.
 word_puzzle = "_ " * len(word)
@@ -105,7 +103,7 @@ def clear_terminal():
 
 def visual_separator():
     """
-    Prints a decorative line as visual separation for feedback.
+    Prints a decorative line for visual separation for user feedback.
     """
     print()
     print("\033[1;32;40m" + "—" * 39 + "\033[0m\n")
@@ -233,7 +231,6 @@ def display_game():
     guesses_left = allowed_wrong_guesses - len(wrong_guesses)
     print("Guesses left: ", guesses_left)
     print()
-    print(word)
     word_puzzle = [letter if letter in right_guesses else "_" for letter in word]
     print("The Word to guess is: ", " ".join(word_puzzle))
     print()
@@ -247,7 +244,6 @@ def get_guess():
     Prompts the user to guess a letter.
     Converts input to uppercase for comparison with the word to guess.
     Passes the letter for validation to the validate_guess function.
-    Returns the user's guess and the validated guess.
     """
     while True:
         guess = input("Guess a letter: ").strip().upper()
@@ -255,12 +251,15 @@ def get_guess():
         is_guess_valid = validate_guess(guess)
         if is_guess_valid is not False:
             return guess
+        else:
+            display_game()
 
 
 def validate_guess(guess):
     """
     Validates user input to ensure it is a single letter.
     Returns the validated letter or False if input is invalid.
+    Emphasises user feedback for invalid input with visual separator.
     """
     if " " in guess or not guess.isalpha():
         visual_separator()
@@ -273,14 +272,15 @@ def validate_guess(guess):
         visual_separator()
         return False
     else:
-        print()
+        print(f"Let's see if {guess} works...")
         return True
 
 
 def compare_guess(guess):
     """
     Compares user's guess with the word to guess and already guessed letters.
-    Returns user feedback for user guess.
+    Displays user feedback for each user guess.
+    Emphasises user feedback with visual separator.
     """
     if guess in right_guesses or guess in wrong_guesses:
         visual_separator()
@@ -338,6 +338,7 @@ def main():
             print()
             choice_play_again()
         elif set(right_guesses) == set(word):
+            clear_terminal()
             print(HANGMAN_DRAWING[len(wrong_guesses)])
             print()
             print("Congratulations, you won!")
