@@ -76,7 +76,6 @@ HANGMAN_DRAWING = [
 
 # global variables
 allowed_wrong_guesses = 6
-print("Allowed wrong guesses: ", allowed_wrong_guesses)
 
 right_guesses = []
 wrong_guesses = []
@@ -85,23 +84,26 @@ wrong_guesses = []
 # Convert word to uppercase for comparison with the user's guess.
 word = random.choice(WORDS)
 
-# Stores the length of unique letters in the word to guess
+# Stores the length of unique letters in the word to guess,
 unique_letters_in_word = len(list(set(word)))
 
-# Generate dashes as to indicate number of letters of word to guess.
+# Generate dashes to indicate number of letters of word to guess.
 word_puzzle = "_ " * len(word)
-user_feedback = ""
 
 
-# Game functions
+# Functions
 
 
 def clear_terminal():
     """
-    Clear terminal screen for a better user experience.
-    Imported built in os module to utilize OS-specific command to interact with operating system.
+    Clears terminal screen for a better user experience.
+    Imported built in os module to utilize OS-specific
+        command to interact with operating system.
     """
     os.system("cls" if os.name == "nt" else "clear")
+
+
+# Game functions
 
 
 def return_to_menu():
@@ -118,6 +120,7 @@ def choice_play_game():
     Welcomes user and prompts to make a choice.
     Choice is to continue to next step to play game or exit.
     Validates user input.
+    Resets game state when user plays again.
     """
     print("Welcome to a game of Hangman!")
     print(HANGMAN_DRAWING[6])
@@ -153,15 +156,20 @@ def choice_display_rules():
     if user_choice_rules == "Y":
         print(
             """
-            You will get a set of blanks representing the number of letters in a word.
-            
-            Guess the word by entering one letter at a time and press enter.
+            You will get a set of blanks representing
+                the number of letters in a word.
 
-            You have 6 guesses. 
+            Guess the word by entering one letter at a time
+                and press enter.
 
-            If you guess correctly, your letter(s) will appear on the blank(s).
+            You have 6 guesses.
 
-            If you fail, you have one less guess left and are one step closer to the gallows. 
+            If you guess correctly,
+                your letter(s) will appear on the blank(s).
+
+            If you fail,
+                you have one less guess left and
+                are one step closer to the gallows.
 
             So choose wisely!
             """
@@ -187,10 +195,11 @@ def choice_username():
 
 def validate_username(username):
     """
-    Validates user input to ensure it is between 1 and 10 characters.
+    Validates user input.
+    Ensures it is between 1 and 10 characters.
     """
     if " " in username or not username.isalpha():
-        print("Invalid username. Please use alphabetic characters and no spaces.")
+        print("Invalid username. Please use letters and no spaces.")
         return False
     elif len(username) < 1 or len(username) > 10:
         print("Invalid username. Please use between 1 and 10 characters.")
@@ -203,11 +212,10 @@ def validate_username(username):
 def display_game():
     """
     Displays the game to the user.
-    Updates the word to guess (word_puzzle) if correct letter is guessed.
+    Updates the displayed word_puzzle.
     Updates the list of used letters.
     """
     print(HANGMAN_DRAWING[len(wrong_guesses)])
-    print(word)  # To-do: delete
     guesses_left = allowed_wrong_guesses - len(wrong_guesses)
     print("Rendering display_game: Guesses left: ", guesses_left)
     print()
@@ -217,10 +225,19 @@ def display_game():
     used_letters = right_guesses + wrong_guesses
     print("Used letters: ", " ".join(used_letters))
     print()
-    #global user_feedback
-    #user_message = user_feedback
-    #print("User Message: ", user_message)
 
+
+def display_user_feedback(user_feedback):
+    """
+    Displays user feedback for each user guess.
+    In a separate function to ensure value assignment before calling.
+    Prints a decorative linevisual separation of feedback.
+    """
+    print("\033[1;32;40m" + "—" * 39 + "\033[0m\n")
+    print()
+    print(user_feedback)
+    print()
+    print("\033[1;32;40m" + "—" * 39 + "\033[0m\n")
 
 
 def get_guess():
@@ -231,7 +248,6 @@ def get_guess():
     """
     guess = input("Guess a letter: ").strip().upper()
     if validate_guess(guess):
-        print("rendering function: get_guess")
         return guess
     else:
         get_guess()
@@ -242,7 +258,6 @@ def validate_guess(guess):
     Validates user input to ensure it is a single letter.
     Returns the validated letter or False if input is invalid.
     """
-    
     if " " in guess or not guess.isalpha():
         print(f"'{guess}' is not a letter, try again.")
         return False
@@ -259,8 +274,6 @@ def compare_guess(guess):
     Compares user's guess with the word to guess and already guessed letters.
     Returns user feedback for user guess.
     """
-    print(type(guess))
-    # guess = str(guess)
     if guess in right_guesses or guess in wrong_guesses:
         return f"You've already guessed {guess}. Try again."
     elif guess not in word:
@@ -269,14 +282,6 @@ def compare_guess(guess):
     else:
         right_guesses.append(guess)
         return f"Great job, {guess} is correct!"
-
-
-def display_user_feedback(user_feedback):
-    """
-    Displays user feedback for user guess.
-    In a separate function to ensure value assignment before calling.
-    """
-    print(user_feedback)
 
 
 def choice_play_again():
@@ -314,14 +319,13 @@ def main():
             display_game()
             print()
             print("Too bad, you lost.")
-            print("len(wrong_guesses)", len(wrong_guesses), allowed_wrong_guesses)
+            print(f"The word to guess was: {word}")
             choice_play_again()
         elif len(right_guesses) == unique_letters_in_word:
             display_game()
             print()
             print("Congratulations, you won!")
             print(f"The word to guess was: {word}")
-            print("len(right_guesses)", len(right_guesses), unique_letters_in_word)
             choice_play_again()
 
 
