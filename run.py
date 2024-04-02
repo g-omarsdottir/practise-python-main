@@ -5,13 +5,13 @@ import os
 
 # Words to guess in a tuple (immutable)
 WORDS = (
-    "ANT BABOON BADGER BAT BEAR BEAVER CAMEL CAT CLAM COBRA COUGAR"
-    "COYOTE CROW DEER DOG DONKEY DUCK EAGLE FERRET FOX FROG GOAT"
-    "GOOSE HAWK LION LIZARD LLAMA MOLE MONKEY MOOSE MOUSE MULE NEWT"
-    "OTTER OWL PANDA PARROT PIGEON PYTHON RABBIT RAM RAT RAVEN"
-    "RHINO SALMON SEAL SHARK SHEEP SKUNK SLOTH SNAKE SPIDER"
-    "STORK SWAN TIGER TOAD TROUT TURKEY TURTLE WEASEL WHALE WOLF"
-    "WOMBAT ZEBRA"
+    "ANT BABOON BADGER BAT BEAR BEAVER CAMEL CAT CLAM COBRA COUGAR "
+    "COYOTE CROW DEER DOG DONKEY DUCK EAGLE FERRET FOX FROG GOAT "
+    "GOOSE HAWK LION LIZARD LLAMA MOLE MONKEY MOOSE MOUSE MULE NEWT "
+    "OTTER OWL PANDA PARROT PIGEON PYTHON RABBIT RAM RAT RAVEN "
+    "RHINO SALMON SEAL SHARK SHEEP SKUNK SLOTH SNAKE SPIDER "
+    "STORK SWAN TIGER TOAD TROUT TURKEY TURTLE WEASEL WHALE WOLF "
+    "WOMBAT ZEBRA "
 ).split()
 
 # r is raw string notation to solve syntax issues with hangman drawing.
@@ -90,6 +90,10 @@ unique_letters_in_word = len(list(set(word)))
 
 # Generate dashes as to indicate number of letters of word to guess.
 word_puzzle = "_ " * len(word)
+user_feedback = ""
+
+
+# Game functions
 
 
 def clear_terminal():
@@ -98,9 +102,6 @@ def clear_terminal():
     Imported built in os module to utilize OS-specific command to interact with operating system.
     """
     os.system("cls" if os.name == "nt" else "clear")
-
-
-# Game functions
 
 
 def return_to_menu():
@@ -125,6 +126,8 @@ def choice_play_game():
     wrong_guesses.clear()
     global word_puzzle
     word_puzzle = ""
+    global word
+    word = random.choice(WORDS)
 
     user_choice_play = input("Would you like to play? (y/n): ").strip().upper()
     if user_choice_play == "N":
@@ -214,14 +217,10 @@ def display_game():
     used_letters = right_guesses + wrong_guesses
     print("Used letters: ", " ".join(used_letters))
     print()
+    #global user_feedback
+    #user_message = user_feedback
+    #print("User Message: ", user_message)
 
-
-def display_user_feedback(user_feedback):
-    """
-    Displays user feedback for user guess.
-    In a separate function to ensure value assignment before calling.
-    """
-    print(user_feedback)
 
 
 def get_guess():
@@ -233,7 +232,9 @@ def get_guess():
     guess = input("Guess a letter: ").strip().upper()
     if validate_guess(guess):
         print("rendering function: get_guess")
-    return guess
+        return guess
+    else:
+        get_guess()
 
 
 def validate_guess(guess):
@@ -241,6 +242,7 @@ def validate_guess(guess):
     Validates user input to ensure it is a single letter.
     Returns the validated letter or False if input is invalid.
     """
+    
     if " " in guess or not guess.isalpha():
         print(f"'{guess}' is not a letter, try again.")
         return False
@@ -257,6 +259,8 @@ def compare_guess(guess):
     Compares user's guess with the word to guess and already guessed letters.
     Returns user feedback for user guess.
     """
+    print(type(guess))
+    # guess = str(guess)
     if guess in right_guesses or guess in wrong_guesses:
         return f"You've already guessed {guess}. Try again."
     elif guess not in word:
@@ -265,6 +269,14 @@ def compare_guess(guess):
     else:
         right_guesses.append(guess)
         return f"Great job, {guess} is correct!"
+
+
+def display_user_feedback(user_feedback):
+    """
+    Displays user feedback for user guess.
+    In a separate function to ensure value assignment before calling.
+    """
+    print(user_feedback)
 
 
 def choice_play_again():
@@ -304,7 +316,7 @@ def main():
             print("Too bad, you lost.")
             print("len(wrong_guesses)", len(wrong_guesses), allowed_wrong_guesses)
             choice_play_again()
-        elif len(right_guesses) is unique_letters_in_word:
+        elif len(right_guesses) == unique_letters_in_word:
             display_game()
             print()
             print("Congratulations, you won!")
