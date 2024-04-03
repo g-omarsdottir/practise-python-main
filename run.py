@@ -52,7 +52,7 @@ HANGMAN_DRAWING = [
   +---+
   |   |
   O   |
- /|\\  |
+ /|\  |
       |
       |
 =========""",
@@ -60,7 +60,7 @@ HANGMAN_DRAWING = [
   +---+
   |   |
   O   |
- /|\\  |
+ /|\  |
  /    |
       |
 =========""",
@@ -68,8 +68,8 @@ HANGMAN_DRAWING = [
   +---+
   |   |
   O   |
- /|\\  |
- / \\  |
+ /|\  |
+ / \  |
       |
 =========""",
 ]
@@ -105,9 +105,7 @@ def visual_separator():
     """
     Prints a decorative line for visual separation for user feedback.
     """
-    print()
     print("\033[1;32;40m" + "—" * 39 + "\033[0m\n")
-    print()
 
 
 # Game functions
@@ -117,7 +115,8 @@ def return_to_menu():
     """
     Enables user to return to the game in case of unintended exit from game.
     """
-    input("Press any key to return to the game menu.")
+    print()
+    input("Press enter to return to the game menu.\n")
     clear_terminal()
     choice_play_game()
 
@@ -129,6 +128,7 @@ def choice_play_game():
     Validates user input.
     Resets game state when user plays again.
     """
+    print()
     print("Welcome to a game of Hangman!")
     print(HANGMAN_DRAWING[6])
     print()
@@ -139,17 +139,20 @@ def choice_play_game():
     global word
     word = random.choice(WORDS)
 
-    user_choice_play = input("Would you like to play? (y/n): ").strip().upper()
+    user_choice_play = input("Would you like to play? (y/n):\n").strip().upper()
     clear_terminal()
     if user_choice_play == "N":
+        print()
         print("You chose not to play. See you later, alligator!")
         return_to_menu()
     elif user_choice_play == "Y":
+        print()
         print("You chose to play, glad to have you on board!")
         choice_display_rules()
     else:
+        print()
         print("Invalid input. Please enter 'y' or 'n'.")
-        user_choice_play
+        choice_play_game()
 
 
 def choice_display_rules():
@@ -158,37 +161,38 @@ def choice_display_rules():
     Choice is to read the rules before playing game.
     Validates user input.
     """
+    print()
     user_choice_rules = (
-        input("Would you like to read the rules? (y/n) ").strip().upper()
+        input("Would you like to read the rules? (y/n)\n").strip().upper()
     )
     clear_terminal()
     if user_choice_rules == "Y":
         print(
             """
-            Game rules:
-            
-            You will get a set of blanks representing
-                the number of letters in a word.
+Game rules:
 
-            Guess the word by entering one letter at a time
-                and press enter.
+You will get a word puzzle as a set of dashes,
+representing the number of letters in the word to guess.
 
-            You have 6 guesses.
+Guess the word by entering one letter at a time
+and press enter.
 
-            If you guess correctly,
-                your letter(s) will appear on the blank(s).
+You have 6 guesses.
 
-            If you fail,
-                you have one less guess left and
-                are one step closer to the gallows.
+If you guess correctly,
+your letter(s) will appear in the word puzzle.
 
-            So choose wisely!
-            """
+If you fail,
+you have one less guess left and
+you are one step closer to the gallows.
+
+Good luck!"""
         )
         choice_username()
     elif user_choice_rules == "N":
         choice_username()
     else:
+        print()
         print("Invalid input. Please enter 'y' or 'n'.")
         choice_display_rules()
 
@@ -199,7 +203,8 @@ def choice_username():
     Passes the user input for validation to the validate_username function.
     """
     while True:
-        username = input("Choose your username: ").strip()
+        print()
+        username = input("Choose your username:\n").strip()
         clear_terminal()
         if validate_username(username):
             return True
@@ -211,12 +216,15 @@ def validate_username(username):
     Ensures it is between 1 and 10 characters.
     """
     if " " in username or not username.isalpha():
+        print()
         print("Invalid username. Please use letters and no spaces.")
         return False
     elif len(username) < 1 or len(username) > 10:
+        print()
         print("Invalid username. Please use between 1 and 10 characters.")
         return False
     else:
+        print()
         print(f"Welcome, {username}, let the games begin!")
         return True
 
@@ -246,7 +254,7 @@ def get_guess():
     Passes the letter for validation to the validate_guess function.
     """
     while True:
-        guess = input("Guess a letter: ").strip().upper()
+        guess = input("Guess a letter:\n").strip().upper()
         clear_terminal()
         is_guess_valid = validate_guess(guess)
         if is_guess_valid is not False:
@@ -262,17 +270,16 @@ def validate_guess(guess):
     Emphasises user feedback for invalid input with visual separator.
     """
     if " " in guess or not guess.isalpha():
-        visual_separator()
+        print()
         print(f"'{guess}' is not a letter, try again.")
         visual_separator()
         return False
     elif len(guess) != 1:
-        visual_separator()
+        print()
         print("Enter a single letter.")
         visual_separator()
         return False
     else:
-        print(f"Let's see if {guess} works...")
         return True
 
 
@@ -283,17 +290,17 @@ def compare_guess(guess):
     Emphasises user feedback with visual separator.
     """
     if guess in right_guesses or guess in wrong_guesses:
-        visual_separator()
+        print()
         print(f"You've already guessed {guess}. Try again.")
         visual_separator()
     elif guess not in word:
         wrong_guesses.append(guess)
-        visual_separator()
+        print()
         print(f"Wrong guess, {guess} is not correct.")
         visual_separator()
     else:
         right_guesses.append(guess)
-        visual_separator()
+        print()
         print(f"Great job, {guess} is correct!")
         visual_separator()
 
@@ -305,18 +312,22 @@ def choice_play_again():
     Validates user input.
     """
     user_choice_play_again = (
-        input("Would you like to play again? (y/n) ").strip().upper()
+        input("Would you like to play again? (y/n)\n").strip().upper()
     )
     clear_terminal()
     if user_choice_play_again == "N":
+        print()
         print("You chose not to play again. See you in a while, crocodile!")
         return_to_menu()
     elif user_choice_play_again == "Y":
-        print("You chose to play again, good stuff!")
+        print()
+        print("Great, let's restart the game.")
         choice_play_game()
     else:
+        print()
         print("Invalid input. Please enter 'y' or 'n'.")
-        user_choice_play_again
+        print()
+        choice_play_again()
 
 
 def main():
@@ -330,21 +341,22 @@ def main():
         guess = get_guess()
         compare_guess(guess)
         if len(wrong_guesses) == allowed_wrong_guesses:
+            clear_terminal()
             display_game()
-            print()
+            visual_separator()
             print("Too bad, you lost.")
             print()
             print(f"The word to guess was: {word}")
             print()
+            visual_separator()
             choice_play_again()
         elif set(right_guesses) == set(word):
             clear_terminal()
-            print(HANGMAN_DRAWING[len(wrong_guesses)])
-            print()
+            display_game()
+            visual_separator()
             print("Congratulations, you won!")
             print()
-            print(f"The word to guess was: {word}")
-            print()
+            visual_separator()
             choice_play_again()
 
 
