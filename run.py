@@ -81,6 +81,8 @@ right_guesses = []
 
 wrong_guesses = []
 
+guesses_list = []
+
 # Generate a random word from the tuple words.
 # Convert word to uppercase for comparison with the user's guess.
 word = random.choice(WORDS)
@@ -242,8 +244,7 @@ def display_game():
     word_puzzle = [letter if letter in right_guesses else "_" for letter in word]
     print("The Word to guess is: ", " ".join(word_puzzle))
     print()
-    used_letters = right_guesses + wrong_guesses
-    print("Used letters: ", " ".join(used_letters))
+    print("Used letters: ", " ".join(guesses_list))
     print()
 
 
@@ -294,15 +295,23 @@ def compare_guess(guess):
         print(f"You've already guessed {guess}. Try again.")
         visual_separator()
     elif guess not in word:
-        wrong_guesses.append(guess)
+        append_guesses_list(guess, False)
         print()
         print(f"Wrong guess, {guess} is not correct.")
         visual_separator()
     else:
-        right_guesses.append(guess)
+        append_guesses_list(guess, True)
         print()
         print(f"Great job, {guess} is correct!")
         visual_separator()
+
+
+def append_guesses_list(guess, correct):
+    guesses_list.append(guess)
+    if correct:
+        right_guesses.append(guess)
+    else:
+        wrong_guesses.append(guess)
 
 
 def choice_play_again():
